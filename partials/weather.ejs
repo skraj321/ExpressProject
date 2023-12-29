@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="./style1.css">
+</head>
+<body>
+   <%- include("../partials/header.ejs") %>
+    <!-- main header -->
+    <div class="container-fluid">
+        <h1 style="padding-top: 2rem;">WEATHER FORECAST</h1>
+        <div id="searchbox" class="search mt-3">
+            <input class="form-control me-2 searchf" type="search"  placeholder="Search for a city" aria-label="Search">
+            <button class="searchbt">Search</button>
+        </div>
+      <div class="container"> 
+        <div id="deg">
+            <img src="clear.png" class="weather-icon" width="120px" height="120px" alt="">
+            <p class="feel2 fs">22°</p>
+            <p class="city">Bangalore</p>
+
+        </div>
+        <div id="contain" class="box">
+            <div class="feels cont">
+                <img src="feels.png" width="40px" height="40px" alt="feels">
+                <p class="p">Feels like</p>
+                <p class="feel1 fs">22°</p>
+            </div>
+            <div class="wind cont">
+                <img src="wind.png" class="img-icon" width="40px" height="40px" alt="wind">
+                <p class="p">Wind</p>
+                <p class="wind1 fs">6 m/h</p>
+            </div>
+            <div class="hum cont">
+                <img src="hum.png" class="img-icon" width="40px" height="40px" alt="">
+                <p class="p">Humidity</p>
+                <p class="humid fs">55%</p>
+            </div>
+            <div class="vis cont">
+                <img src="vis.png" class="img-icon" width="40px" height="40px" alt="">
+                <p class="p">Visibility</p>
+                <p class="visible fs">8 km</p>
+            </div>
+            <div class="sunr cont">
+                <img src="sunr.png" class="img-icon" width="40px" height="40px" alt="">
+                <p class="p">Sunrise</p>
+                <p class="sunrise fs">05:30</p>
+            </div>
+            <div class="suns cont">
+                <img src="sunset.png" class="img-icon" width="40px" height="40px" alt="">
+                <p class="p">Sunset</p>
+                <p class="sunset fs">18:00</p>
+            </div>
+
+        </div>
+        
+      </div> 
+    </div><br/><br>
+    
+    
+</body>
+<script>
+    const apikey="a5b13e687b77643436cd616d8789ef19";
+    const apiURL="https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+    const searchbox=document.querySelector(".search input");
+    const searchbtn=document.querySelector(".search  button");
+    const weatherIcon=document.querySelector(".weather-icon");
+    async function checkWeather(city){
+        const response=await fetch(apiURL+ city +`&appid=${apikey}`);
+        var data=await response.json();
+        console.log(data);
+        document.querySelector(".city").innerHTML=data.name;
+        document.querySelector(".feel1").innerHTML=Math.round(data.main.temp)+"°" ;
+        document.querySelector(".feel2").innerHTML=Math.round(data.main.temp)+"°C" ;       
+        document.querySelector(".wind1").innerHTML=data.wind.speed+"km/h";
+        document.querySelector(".humid").innerHTML=data.main.humidity+"%";
+
+        const sunriseTimestamp = data.sys.sunrise;
+        const sunriseIST = new Date(sunriseTimestamp * 1000).toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+        document.querySelector(".sunrise").innerHTML=sunriseIST;
+
+        const sunsetTimestamp = data.sys.sunset;
+        const sunsetIST = new Date(sunsetTimestamp * 1000).toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+
+        document.querySelector(".sunset").innerHTML=sunsetIST;
+
+        document.querySelector(".visible").innerHTML=Math.round(data.visibility/1000)+"km" ;
+        if(data.weather[0].main=="Clouds"){
+            weatherIcon.src="clouds.png";
+        }else if(data.weather[0].main=="Clear"){
+            weatherIcon.src="clear.png";
+        }else if(data.weather[0].main=="Rain"){
+            weatherIcon.src="rain.png";
+        }else if(data.weather[0].main=="Smoke"){
+            weatherIcon.src="smoke.png";
+        }else if(data.weather[0].main=="Drizzle"){
+            weatherIcon.src="drizzle.png";
+        }else if(data.weather[0].main=="Mist"){
+            weatherIcon.src="mist.png";
+        }else{
+            weatherIcon.src="clear.png";
+        }
+
+}
+searchbtn.addEventListener("click",()=>{
+    checkWeather(searchbox.value);
+ 
+});
+    
+</script>
+</html>
